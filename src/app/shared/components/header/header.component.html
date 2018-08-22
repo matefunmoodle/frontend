@@ -1,0 +1,20 @@
+<div class="pos-f-t fixed-top header" style="z-index: 1100;">
+    <nav class="navbar navbar-inverse bg-inverse navbar-toggleable-md" style="background: #0278AE !important;">
+        <button class="navbar-toggler navbar-toggler-left" style="display: block;" (click)="toggleSidebar($event)">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <a class="navbar-brand" href="#/matefun" style="margin-left: 3.5em; width: 5em">MateFun</a>
+        <div class="collapse navbar-collapse" style="position: absolute; right: 10px; display: block; width: 15em; text-align: right;" id="navbarTogglerDemo02">
+            <ul class="navbar-nav ml-auto mt-2 mt-md-0">
+                <div class="nav-item dropdown" ngbDropdown>
+                    <a href="javascript:void(0)" class="nav-link" ngbDropdownToggle>
+                        <i class="fa fa-user"></i> {{usuario.nombre+' '+usuario.apellido}}<b class="caret"></b>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <a class="dropdown-item" style="cursor: pointer;" (click)=logout() ><i class="fa fa-fw fa-power-off"></i> Salir</a>
+                    </div>
+                </div>
+            </ul>
+        </div>
+    </nav>
+</div>

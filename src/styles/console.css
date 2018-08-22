@@ -1,0 +1,176 @@
+    #console {
+        height: 352px;
+        width: 100%;
+        /*margin-left: -10px !important;*/
+        position: relative;
+        background-color: black;
+        border: 2px solid #CCC;
+        margin: 0 auto;
+    }
+    /* The inner console element. */
+    
+    .jqconsole {
+        padding: 10px;        
+    }
+    /* The cursor. */
+    
+    .jqconsole-cursor {
+        background-color: gray;
+    }
+    /* The cursor color when the console looses focus. */
+    
+    .jqconsole-blurred .jqconsole-cursor {
+        background-color: #666;
+    }
+    /* The current prompt text color */
+    
+    .jqconsole-prompt {
+        color: rgb(11, 204, 50);
+           font-style: italic;
+    }
+    /* The command history */
+    
+    .jqconsole-old-prompt {
+        color: rgb(11, 204, 50);
+       /* color: rgb(11, 204, 2); */
+        /*color: rgba(140, 136, 187, 0.84);*/
+        /* font-weight: normal;*/
+    }
+    
+    .jqconsole-prompt, .jqconsole-old-prompt, .jqconsole-output, .jqconsole-logs, .jqconsole-error  {
+        word-wrap: break-word;
+        white-space: pre-wrap;
+
+    }
+
+    /* The text color when in input mode. */
+
+    .jqconsole-input {
+        
+    }
+    /* Previously entered input. */
+    
+    .jqconsole-old-input {
+        color: #bb0;
+        font-weight: normal;
+    }
+    /* The text color of the output. */
+
+    
+    .jqconsole-header{
+        color: #d0d0d0;
+    }
+
+    .nomArchivoInp {
+        /*width: 55% !important;*/
+        width: calc(100% - 250px);
+        float: left;
+    }
+    
+    /*.CodeMirror {
+        height: 450px !important;
+    }*/
+    
+     /* custom clases */
+
+    /* normal output */
+    .jqconsole-output{
+        color:white;
+    }
+
+    /* logs */
+    .jqconsole-logs{
+        color:brown;
+    }
+
+/* CSS Necesario para los paneles del editor */
+ .border {
+    border: 1px solid #f7f7f7;
+  }
+  .add-panel {
+    background: orange;
+    padding: 3px 6px;
+    color: white !important; 
+    border-radius: 3px;
+  }
+  .add-panel, .remove-panel {
+    cursor: pointer;
+  }
+  .remove-panel {
+    float: right;
+  }
+  .panel {
+    background: #f7f7f7;
+    padding: 3px 7px;
+    font-size: 0.85em;
+  }
+  .panel.top, .panel.after-top {
+    border-bottom: 1px solid #ddd;
+  }
+  .panel.bottom, .panel.before-bottom {
+    border-top: 1px solid #ddd;
+  }
+/* FIN CSS Paneles **************************/  
+
+
+.alertPosition{
+  position: absolute;
+  left: 50%;
+  z-index: 1500;
+  transform: translateX(-50%);
+}
+
+
+.breakpoints {width: .8em;}
+      .breakpoint { color: white !important; }
+      .CodeMirror {border: 1px solid #aaa;}
+.CodeMirror-lint-mark-error, .CodeMirror-lint-mark-warning {
+  background-position: left bottom;
+  background-repeat: repeat-x;
+}
+
+.CodeMirror-lint-mark-error {
+  background-image:
+  url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAYAAAC09K7GAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sJDw4cOCW1/KIAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAHElEQVQI12NggIL/DAz/GdA5/xkY/qPKMDAwAADLZwf5rvm+LQAAAABJRU5ErkJggg==")
+  ;
+}
+
+.CodeMirror-lint-mark-warning {
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAYAAAC09K7GAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sJFhQXEbhTg7YAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAMklEQVQI12NkgIIvJ3QXMjAwdDN+OaEbysDA4MPAwNDNwMCwiOHLCd1zX07o6kBVGQEAKBANtobskNMAAAAASUVORK5CYII=");
+}
+
+.CodeMirror-lint-marker-error, .CodeMirror-lint-marker-warning {
+  background-position: center center;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  display: inline-block;
+  height: 16px;
+  width: 16px;
+  vertical-align: middle;
+  position: relative;
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+    cursor:pointer;
+}
+
+.tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: white;
+    color: brown;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 10000;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+}

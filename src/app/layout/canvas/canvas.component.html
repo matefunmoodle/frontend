@@ -1,0 +1,53 @@
+<div class="card">
+<!-- 	<div class="card-header">
+		<label>Gráficas</label>
+	</div>  -->
+	<div class="card-block contenedor-canvas" >
+		<button placement="bottom" [ngbPopover]=popoverTipoZoom  triggers="mouseenter:mouseleave:click" data-placement="bottom" class="btn btn-sm btn-secondary" style="float:right; margin-right: 198px; margin-top: -55px" (click)=cambiarTipoZoom() >{{tipoZoom}}</button>
+		<ng-template #popoverTipoZoom>
+			{{tipoZoomDesc}}
+		</ng-template>
+		<button ngbPopover="Zoom +"  triggers="mouseenter:mouseleave" data-placement="bottom" class="btn btn-sm btn-secondary" style="float:right; margin-right: 165px; margin-top: -55px" (click)=zoomMas() ><i class="fa fa-plus"></i></button>
+		<button ngbPopover="Zoom -"  data-placement="bottom" triggers="mouseenter:mouseleave" class="btn btn-sm btn-secondary" style="float:right; margin-right: 132px; margin-top: -55px" (click)=zoomMenos() ><i class="fa fa-minus"></i></button>
+		<button ngbPopover="Centrar"  triggers="mouseenter:mouseleave" data-placement="bottom" class="btn btn-sm btn-secondary" style=" float:right; margin-right: 99px; margin-top: -55px" (click)="centrarCanvas()" ><i class="fa fa-arrows"></i></button>
+		<button ngbPopover="Borrar"  triggers="mouseenter:mouseleave" data-placement="bottom" class="btn btn-sm btn-secondary" style=" float:right; margin-right: 66px; margin-top: -55px" (click)="limpiarCanvas()" ><i class="fa fa-trash"></i></button>
+
+		<button ngbPopover="Descargar PNG"  triggers="mouseenter:mouseleave" data-placement="bottom" class="btn btn-sm btn-secondary" style="float:right; margin-right: 33px; margin-top: -55px" (click)=exportImg() ><i class="fa fa-download"></i></button>
+		<a id="dl" download="Canvas.png" style="display: none">Download Canvas</a>
+
+		<button class="btn btn-sm btn-secondary" style="float:right; margin-top: -55px" id="popover"  placement="bottom" [ngbPopover]=popoverCanvas popoverTitle="Configuración" #popover="ngbPopover" tiggers="click">
+			<i class="fa fa-gear"></i>
+		</button>
+		<ng-template #popoverCanvas style="width: 15em">
+			<div style="width: 8em">
+				<div class="form-group">
+					<label>
+						<input type="checkbox" style="width: 15px; display: inline-block;" name="evaluacionVertical" class="form-control form-control-sm" [checked]=evaluacionVertical (click)="mostrarEvaluacionVertical()">
+						Evaluacion
+					</label>
+					<br>
+					<label>
+						<input type="checkbox" style="width: 15px; display: inline-block;" name="mostrarGrilla" class="form-control form-control-sm" [checked]=mostrarGrilla (click)="mostrarOcultarGrilla()">
+						Grilla
+					</label>
+					<br>
+					<label>
+						<input type="checkbox" style="width: 15px; display: inline-block;" name="mostrarEjes" class="form-control form-control-sm" [checked]=mostrarEjes (click)="mostrarOcultarEjes()">
+						Ejes
+					</label>
+				</div>
+			</div>
+		</ng-template>
+		
+		<button class="btn btn-sm btn-secondary" data-placement="bottom" *ngIf="!animando && elementosAnimacion.length>0" style=" float:left; margin-top: -5px; margin-right: 5px" (click)="play()" ><i class="fa fa-play"></i></button>
+		<button class="btn btn-sm btn-secondary" data-placement="bottom" *ngIf="animando && elementosAnimacion.length>0" style=" float:left; margin-top: -5px; margin-right: 5px" (click)="pause()" ><i class="fa fa-pause"></i></button>
+
+		<ngb-progressbar style="float: left; width: 45%" *ngIf="elementosAnimacion.length>0" type="info" [value]="((frameAnimacion+1)/elementosAnimacion.length)*100"></ngb-progressbar>
+		<span style="float: right; margin-left: 10px" *ngIf="elementosAnimacion.length>0"> {{timer}}ms</span>
+   		<input style="float: right; width: 20%" *ngIf="elementosAnimacion.length>0" type="range" min="40" max="1500" [value]="timer" (input)="timer = $event.target.value" /> 
+
+		<canvas #canvasElement width="2000" height="2000" style="max-width: 100%;" (mousemove)="moveGraph($event)" (touchmove)="moveGraph($event)" (touchstart)="moveGraph($event)" (touchend)="moveGraph($event)" (mouseleave)="leaveCanvas($event)" (mousewheel)="zoomGraph($event)" (DOMMouseScroll)="zoomGraph($event)" id="myCanvas">
+		</canvas>
+		
+	</div>
+</div>

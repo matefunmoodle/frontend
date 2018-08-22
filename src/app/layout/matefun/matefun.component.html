@@ -1,0 +1,122 @@
+<notificacion></notificacion> 
+<div class="container-fluid" style=" padding-left: 0px; padding-right: 0px; margin-top: -13px; margin-left: -6px; margin-right: -6px;">
+    <div class="row">
+        <div class="col-md-6">
+            <ngb-tabset [destroyOnHide]=false>
+                <ngb-tab id="ProgramBtn"title="Programa">
+                    <ng-template ngbTabContent>
+
+            <div class="card">
+                <div class="card-header">
+                    <form>
+                        <input type="text" name="archivo" class="nomArchivoInp form-control form-control-sm" 
+                        [disabled]="!archivo.editable || archivo.estado=='Corregido' || archivo.estado == 'Entregado'"
+                        *ngIf="archivo" [(ngModel)]="archivo.nombre" (keyup)="archivoModificado()" placeholder="nombre del archivo" />
+
+                        <button id="downloadFileButton" (click)="downloadFile()" style="margin-left: 10px; float: right;"  class="btn btn-sm btn-secondary" placement="bottom" ngbPopover="Exportar (Ctrl+E)" triggers="mouseenter:mouseleave" tiggers="click">
+                            <i class="fa fa-download "></i>
+                        </button>
+
+                        <button style="margin-left: 10px; float: right;" id="popover" class="btn btn-sm btn-secondary" placement="bottom" [ngbPopover]=popoverContent #popover="ngbPopover" popoverTitle="Configuración" tiggers="click">
+                            <i class="fa fa-gear"></i>
+                        </button>
+                        <div style="margin-left: 10px; float: right;" ngbPopover="Guardar archivo (Ctrl+G)" triggers="mouseenter:mouseleave" placement="bottom" >
+                            <button [disabled]="!modificado" (click)="guardarArchivo()" class="btn btn-sm btn-secondary" >
+                                <i class="fa fa-save"></i>
+                            </button>
+                        </div>
+                        <button style="margin-left: 10px; float: right;" (click)="reiniciarInterprete()" class="btn btn-sm btn-secondary" ngbPopover="Reiniciar intérprete (Ctrl+R)" triggers="mouseenter:mouseleave" placement="bottom">
+                            <i class="fa fa-refresh"></i>
+                        </button>
+                        <button style="margin-left: 10px; float: right;" (click)="runCode()" class="btn btn-sm btn-secondary" ngbPopover="Cargar programa (Ctrl+P)" triggers="mouseenter:mouseleave" placement="bottom">
+                            <i class="fa fa-play"></i>
+                        </button>
+                        <button style="float: right;" (click)="seleccionarDirectorio()" class="btn btn-sm btn-secondary" ngbPopover="Nuevo archivo (Ctrl+A)" triggers="mouseenter:mouseleave" placement="bottom">
+                            <i class="fa fa-plus"></i>
+                        </button>
+                        <ng-template #popoverContent style="width: 15em">
+                            <div style="width: 12em">
+                                <div class="form-group">
+                                    <label>Tema:</label>
+                                    <select name="theme" class="form-control form-control-sm" #selectTheme (change)=updateConfig(selectTheme.value)>
+                                        <option *ngFor="let theme of themes" [selected]="theme==configCodeMirror.theme" value='{{theme}}'>{{theme}}</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Tamaño de fuente:</label>
+                                    <div>
+                                        <button class="btn btn-sm btn-secondary" (click)="aumentarFuente()">A⁺</button>
+                                        <button class="btn btn-sm btn-secondary" (click)="disminuirFuente()">A⁻</button>
+                                        {{configCodeMirror.fontSize}}px                                    
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>
+                                        <input type="checkbox" style="width: 15px; display: inline-block;" name="argumentoF" class="form-control form-control-sm" [(ngModel)]=argumentoF>
+                                        Mostrar advertencias de uso de funciones
+                                    </label>
+                                    <br>
+                                    <label>
+                                        <input type="checkbox" style="width: 15px; display: inline-block;" name="argumentoI" class="form-control form-control-sm" [(ngModel)]=argumentoI>
+                                        Mostrar advertencias de uso de operadores infijos
+                                    </label>
+                                </div>
+                                <div class="form-group">
+                                    <button class="btn btn-secondary" (click)="saveConfig()">Guardar</button>
+                                </div>
+                            </div>
+                        </ng-template>
+                    </form>
+                </div>
+                <codemirror class="codemirrorPrograma" [(ngModel)]="archivo.contenido" (keyup)="archivoModificado()" [config]="configCodeMirror" [ngStyle]="{'font-size': configCodeMirror.fontSize+'px'}">
+                </codemirror>
+            </div>
+
+            </ng-template>
+                </ngb-tab>
+                <ngb-tab id="FigurasBtn" title="Figuras">
+                    <ng-template ngbTabContent>
+                        <canvas-component (canvasComp)=canvasC></canvas-component>
+                    </ng-template>
+                </ngb-tab>
+            </ngb-tabset> 
+
+        </div>
+
+        <div class="col-md-6">
+            <!--  
+            <ngb-tabset [destroyOnHide]=false>
+                <ngb-tab title="Programa">
+                    <ng-template ngbTabContent>
+
+                        <div class="card">
+                            <div id="console" > </div>
+                        </div>
+
+                    </ng-template>
+                </ngb-tab>
+                <ngb-tab title="Figuras">
+                    <ng-template ngbTabContent>
+                        <canvas-component (canvasComp)=canvasC></canvas-component>
+                    </ng-template>
+                </ngb-tab>
+            </ngb-tabset> 
+            -->
+            
+
+
+            <div class="card">
+                <div id="console"> </div>
+            </div>
+           <!--
+            <canvas-component (canvasComp)=canvasC></canvas-component>
+            
+             <div class="card">
+                <div id="svgHaskell">
+                </div>
+            </div> -->
+
+        </div>
+    </div>
+</div>
+

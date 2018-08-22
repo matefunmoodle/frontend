@@ -1,0 +1,9 @@
+<!--
+<ngb-alert class="alertPosition" *ngFor="let alert of alerts;let i = index" [type]="alert.type" [style.top]="(i*70+50)+'px'" dismissible="true" dismissOnTimeout="5000" (close)="closeAlert(i)">
+				{{ alert?.text }}
+</ngb-alert>
+ -->
+
+<ngb-alert class="alertPosition" *ngFor="let alert of alerts; let i = index" [type]="alert?.type" [style.top]="(i*60+30)+'px'" (close)="closeAlert(i)">
+{{ alert?.text }}
+</ngb-alert>

@@ -1,0 +1,82 @@
+// @media screen and (max-width: 992px) {
+	.push-right {
+		.sidebar {
+			left: 235px !important;
+		}
+	}
+// }
+
+
+.CodeMirror {
+	height: 400px !important;
+}
+
+#console {
+	height: 400px !important;
+}
+
+.contenedor-canvas{
+	height: 400px !important;
+}
+
+.listado-archivos{
+	height: 400px !important;
+}
+
+.previewArchivoNoSeleccionado{
+	height: 400px !important;
+}
+
+.listado-grupos {
+	height: 400px !important;
+}
+
+.previewArchivoNoSeleccionado{
+	height: 400px !important;
+}
+
+.listadoEntregasAlumnoGrupos{
+	height: 400px !important;
+}
+
+@media screen and (min-width: 992px) {
+	.codemirrorArchivo .CodeMirror {
+		height: calc(100vh - 235px) !important;	
+	}
+
+	.codemirrorPrograma .CodeMirror {
+	 	height: calc(100vh - 197px) !important;
+	}
+
+	.codemirrorGrupos .CodeMirror {
+	 	height: calc(100vh - 232px) !important;
+	}
+
+	#console {
+		height: calc(100vh - 79px) !important;
+	}
+
+	.contenedor-canvas{
+		height: calc(100vh - 121px) !important;
+	}
+
+	.listado-archivos{
+		height: calc(100vh - 265px) !important;
+	}
+
+	.previewArchivoNoSeleccionado{
+		height: calc(100vh - 275px) !important;
+	}
+
+	.previewArchivoNoSeleccionadoGrupos{
+		height: calc(100vh - 225px) !important;
+	}
+
+	.listadoEntregasAlumnoGrupos{
+		height: calc(100vh - 225px) !important;
+	}
+
+	.listado-grupos {
+		height: calc(100vh - 270px) !important;
+	}
+}

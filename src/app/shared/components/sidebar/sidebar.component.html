@@ -1,0 +1,14 @@
+ <nav class="sidebar" #sidebarNav [ngClass]="{sidebarPushRight: isActive}" style="background: #036b9a !important;">
+    <ul class="list-group">
+        <a [routerLink]="['/matefun']" (click)=toggleSidebar() [routerLinkActive]="['router-link-active']" class="list-group-item" style="color: white;">
+            <i class="fa fa-fw fa-desktop"></i>&nbsp;Programa
+        </a>
+        <a [routerLink]="['/archivos']" (click)=toggleSidebar() [routerLinkActive]="['router-link-active']" class="list-group-item" style="color: white;">
+            <i class="fa fa-fw fa-file-o"></i>&nbsp;Archivos
+        </a>
+        <a *ngIf="esDocente()" [routerLink]="['/grupos']" (click)=toggleSidebar() [routerLinkActive]="['router-link-active']" class="list-group-item" style="color: white;">
+            <i class="fa fa-fw fa-users"></i>&nbsp;Grupos
+        </a>
+        
+    </ul>
+</nav>
