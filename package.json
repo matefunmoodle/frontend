@@ -2,16 +2,24 @@
   "name": "sb-admin-angular4-bootstrap4",
   "version": "1.0.0",
   "license": "MIT",
+  "main":"app.js",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng serve --port 5000",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "postinstall": "ng build --aot -prod"
+  },
+  "engines": {
+    "node":"~6.10.3",
+    "npm":"~3.10.10"
   },
   "private": true,
   "dependencies": {
+    "@angular/cli": "1.2.6",
+    "@angular/compiler-cli": "^4.0.0",
     "@angular/common": "^4.0.0",
     "@angular/compiler": "^4.0.0",
     "@angular/core": "^4.1.3",
