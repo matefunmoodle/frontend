@@ -44,7 +44,8 @@ export class CalificarEntrega extends DialogComponent<ConfirmModel, boolean> imp
   archivo: Archivo;
   nota: number = 1;
   parentContext: any;
-
+  cargando: boolean = false;
+  
   constructor(dialogService: DialogService) {
     super(dialogService);
     
