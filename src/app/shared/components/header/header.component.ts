@@ -17,7 +17,7 @@ export class HeaderComponent implements OnInit {
         private router : Router, 
         private sessionService : SessionService,
         private ghciService : GHCIService) {
-        this.usuario = Usuario.getUser();
+        this.usuario = authService.getUser();
     }
     ngOnInit() {}
 

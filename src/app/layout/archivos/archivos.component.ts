@@ -1,6 +1,5 @@
 import { Component,ViewChild } from '@angular/core';
 import { Archivo } from '../../shared/objects/archivo';
-import { Usuario } from '../../shared/objects/usuario';
 import { AuthenticationService } from '../../shared/services/authentication.service';
 import { HaskellService } from '../../shared/services/haskell.service';
 import { SessionService } from '../../shared/services/session.service';
@@ -12,63 +11,37 @@ import { CompartirArchivoComponent } from './compartirArchivo.component';
 import { ConfirmarEliminar } from './confirmarEliminar.component';
 import { DialogService } from "ng2-bootstrap-modal";
 import { ConfirmComponent } from '../../shared/modal/confirm.component';
-import { ConfirmEntregaComponent } from '../../shared/modal/confirmentrega.component';
-import { ModalCompartirArchivoComponent } from '../../shared/modal/modalcompartirarchivocomponent.component';
 import { SeleccionarDirectorioMove } from './seleccionarDirectorio.component';
 import { CodemirrorComponent } from 'ng2-codemirror';
 import { NgbPopoverConfig, NgbPopover} from '@ng-bootstrap/ng-bootstrap';
-import { Services } from '../../shared/services/services.service';
-import { Assignment } from '../../shared/objects/assignment';
-//TODO importar de otro lado
-import { CalificarEntrega } from './../grupos/calificarEntrega.component';
+
 import 'codemirror/mode/haskell/haskell';
 import 'codemirror/addon/display/panel';
 import 'codemirror/addon/hint/show-hint';
 import 'codemirror/addon/hint/anyword-hint';
 import 'codemirror/mode/markdown/markdown';
-import * as _ from "lodash";
 
 @Component({
 	moduleId: module.id,
 	selector: 'archivos',
-	templateUrl: './archivos.component.html',
-	styleUrls: ['./archivos.component.scss']
+	templateUrl: './archivos.component.html'
 })
 
 export class ArchivosComponent {
-	soloMatefun: boolean = false;
-	soloMfTexto: string = '.mf';
-	soloMfTooltip: string = 'Mostrar solo archivos matefun';
 	archivos : Archivo[] = [];
 	archivosCompartidos: Archivo[] = [];
 	archivosCompartidosSinDuplicados: Archivo [] = [];
 	archivoSeleccionado: Archivo;
 	loading: boolean = false;
 	loadingCompartidos:boolean = false;
-	archivoClickeado: Archivo = undefined;
 	filtroNombre: string = '';
 	idRecorridos :any = [];
 	esAlumno :boolean;
-	esDocente: boolean;
-	compartiendo: boolean = false;
-	creandoArchivo: boolean = false;
-	showLoadingFileIndicator: boolean = false;
 	tree: any;
-	allAssignments: Assignment[];
 	preview: string = '';
 	directorioActual:any;
-	directorioCompartidoActual: any
 	sortFunction:any;
-	coursesGroupsAndMembers;
-	configCodeMirror = JSON.parse(localStorage.getItem('codeMirrorConfig')) ;
-	archivosCurso: Archivo[] = [];
-
-	get vistaDirectorioActualMisArchivos(){
-		if (this.soloMatefun)
-			return this.directorioActual.archivos.filter(arch => arch.nombre.toLowerCase().endsWith('.mf') );
-		else
-			return this.directorioActual.archivos;
-	}
+	configCodeMirror = JSON.parse(sessionStorage.getItem('codeMirrorConfig')) ;
 
 	constructor(
 		private router: Router,
@@ -76,88 +49,43 @@ export class ArchivosComponent {
 		private authService: AuthenticationService,
 		private haskellService: HaskellService,
 		private sessionService: SessionService,
-		private dialogService: DialogService
+		private dialogService:DialogService
 		){
-		this.esAlumno =  Usuario.getUser().esAlumno();
-		this.esDocente =  Usuario.getUser().esDocente()
-		this.coursesGroupsAndMembers = undefined;
+		this.esAlumno = JSON.parse(sessionStorage.getItem("currentUser")).tipo ==="alumno";
 		this.directorioActual = {};
 		this.directorioActual.archivos = [];
-
-		this.directorioCompartidoActual = {};
-		this.directorioCompartidoActual.archivos = [];
-
 		this.configCodeMirror.readOnly = true;
-
-		//lo que muestra la vista del directorio actual
-		//this.vistaDirectorioActualMisArchivos = [];
-
 	}
 	@ViewChild(CodemirrorComponent) codemirror: CodemirrorComponent;
 
 	ngOnInit(){
-		this.compartiendo = false;
-		this.creandoArchivo = false;
-		this.soloMatefun = false;
-		this.soloMfTexto= '.mf';
-		this.soloMfTooltip = 'Mostrar solo archivos matefun';
-		const todosLosCursos = this.authService.getTodosLosCursos();
-		Promise.all(
-			todosLosCursos.map((course) => (
-				this.haskellService.getCourseGroupsAndMembers(course['id'])
-			))
-		).then( cgm => {
-			this.coursesGroupsAndMembers = cgm;
-		});
-
-
 		this.sortFunction = 'tipo'
-		let cedula = Usuario.getUser().cedula;
+		let cedula = this.authService.getUser().cedula;
 		this.loading = true;
-		this.haskellService.getArchivos(cedula).subscribe(
+		this.haskellService.getArchivos(cedula)
+		.subscribe(
 			archivos => {
-				if (archivos) {
-					archivos.map ((a: Archivo) => { if (!!a.directorioMatefun) a.directorioMatefun = a.padreId==-1 ? null : '/' });
-				}
 				this.archivos = archivos;
 				this.loading = false;
 				this.buildTreeFromList();
 
 			}, 
 			error => console.log(error) 
-		);
-			
-		this.loadingCompartidos = true;
-		this.haskellService.getDirectoryContents('/', true).subscribe(
-			archivos => {
-				if (archivos) {
-					archivos.map ((a: Archivo) => { if (!!a.directorioMatefun) a.directorioMatefun = '/' });
-				}
-				this.archivosCompartidos = archivos;
-				this.archivosCompartidosSinDuplicados = archivos.filter(arch => arch.archivoOrigenId != -1 || !archivos.some(a => a.archivoOrigenId == arch.id));
-				this.loadingCompartidos = false;
-				console.log ('files: ' , this.archivosCompartidosSinDuplicados)
-				console.log ('filesNoDup: ' , this.archivosCompartidosSinDuplicados)
-			}, 
-			error => console.log(error)
-		);
+			);
 
-		this.haskellService.getArchivosDeCursos(cedula).subscribe(
-			archivosCurso => {
-				this.archivosCurso = archivosCurso;	
-			}, 
-			error => console.log(error)
-		);
+		if(this.esAlumno){
+			this.loadingCompartidos = true;
+			this.haskellService.getArchivosCompartidosAlumno(cedula)
+			.subscribe(
+				archivos => {
+					this.archivosCompartidos = archivos;
+					this.archivosCompartidosSinDuplicados = archivos.filter(arch => arch.archivoOrigenId != -1 || !archivos.some(a => a.archivoOrigenId == arch.id));
+					this.loadingCompartidos = false;
+				}, 
+				error => console.log(error) 
+				);
 
-		this.haskellService.getAllAssignments().subscribe(
-			apiassignment => {
-			  this.allAssignments = apiassignment;
-			}, 
-			error => {
-			  this.notifService.error(error);
-			}
-		);
-
+		}
 	}
 	ordenarMixto(){
 		//1. primero las carpetas.
@@ -300,15 +228,12 @@ export class ArchivosComponent {
 		}
 	}
 
-
 	recargarArchivos(idDirectorioActual){
-		console.log ('recargarArchivos, idDirectorioActual: ' , idDirectorioActual)
-		let cedula = Usuario.getUser().cedula;
+		let cedula = this.authService.getUser().cedula;
 		this.loading = true;
 		this.haskellService.getArchivos(cedula)
 		.subscribe(
 			archivos => {
-				console.log ('Archivos Recargados: ' , archivos)
 				this.archivos = archivos;
 				this.loading = false;
 				this.buildTreeFromList_setearDirectorioActual(idDirectorioActual);
@@ -321,12 +246,11 @@ export class ArchivosComponent {
 
 	navBack(){
 		var that =this;
-		if(this.directorioActual.padreId!==-1) {
+		if(this.directorioActual.padreId!==-1){
 			var padre = this.archivos.filter(function(a){return a.id===that.directorioActual.padreId})[0];
 			this.directorioActual = padre;	
 		}
-		this.archivoSeleccionado = undefined;
-		this.preview = '';
+		
 	}
 	
 	setSoloLectura = function(arch: Archivo){
@@ -336,6 +260,7 @@ export class ArchivosComponent {
 		.subscribe(
 			archivo => {
 				console.log("Archivo modificado");
+
 			}, 
 			error => {
 				this.notifService.error(error);
@@ -343,16 +268,7 @@ export class ArchivosComponent {
 		
 	}
 	
-	soloMatefunToggle(event){
-		this.soloMatefun = !this.soloMatefun;
-		this.soloMfTexto = this.soloMatefun ? ' .* ' : '.mf';
-		this.soloMfTooltip = this.soloMatefun ? 'Mostrar todos los archivos' : 'Mostrar solo archivos matefun';
-	}
-
-	cargarArchivo(arch: Archivo = null) {
-		if (arch)
-			this.archivoSeleccionado = arch;
-
+	cargarArchivo(){
 		if(this.archivoSeleccionado){
 			if(this.archivoSeleccionado.directorio){
 				this.notifService.warning('No se seleccionó ningún archivo',false);
@@ -364,7 +280,7 @@ export class ArchivosComponent {
 						this.sessionService.setArchivo(this.archivoSeleccionado);
 						this.router.navigate(['/matefun']);
 					}else{
-						let cedula = Usuario.getUser().cedula;
+						let cedula = this.authService.getUser().cedula;
 						this.haskellService.getCopiaArchivoCompartidoGrupo(cedula,this.archivoSeleccionado.id).subscribe(
 							archivo => {
 								this.sessionService.setArchivo(archivo);
@@ -384,49 +300,18 @@ export class ArchivosComponent {
 		}
 	}
 
-
-	mostrarModalCompartirArchivo(){
-		
-		let pc: any = this;
-		let disposable = this.dialogService.addDialog(ModalCompartirArchivoComponent, {
-			archivo: this.archivoSeleccionado,
-			coursesGroupsAndMembers: this.coursesGroupsAndMembers,
-			parentContext: pc}
-		).subscribe((isConfirmed)=>{
-			console.log ('isConfirmed: ' , isConfirmed)
-		});
-	}
-
-	convertirFecha(num: number){
-		const a: Date = new Date(num * 1000);
-		const months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-		const year = a.getFullYear();
-		const month = months[a.getMonth()];
-		const date = a.getDate();
-		const hour = a.getHours();
-		const min = a.getMinutes();
-		return date + ' ' + month + ' ' + (year<10?'0'+year:year) + ' ' + (hour<10?'0'+hour:hour) + ':' + (min<10?'0'+min:min);
-	}
-
-	calificarEntrega(){
-		let disposable = this.dialogService.addDialog(CalificarEntrega,
-		  {
-			cedula: JSON.parse(localStorage.currentUser).cedula+'',  
-			archivo: this.archivoSeleccionado,
-			  parentContext: this
-			})
-		.subscribe((isConfirmed)=>{ });
-	  }
-
-	confirmarEntrega() {
-		this.dialogService.addDialog(ConfirmEntregaComponent, {
-			title:'Realizar entrega' , 
+	confirmarEntrega(){
+		let disposable = this.dialogService.addDialog(ConfirmComponent, {
+			title:'Entregar archivo', 
+			message:'¿Desea entregar el archivo "'+this.archivoSeleccionado.nombre+'"?\nNo se podrá editar luego de la entrega.',
 			confirmText: 'Entregar',
-			cancelText: 'Cancelar',
-			archivo: this.archivoSeleccionado,
-			allAssignments: this.allAssignments,
-			parent: this
+			cancelText: 'Cancelar'
 		})
+		.subscribe((isConfirmed)=>{
+			if(isConfirmed) {
+				this.entregarArchivo();
+			}
+		});
 	}
 
 	entregarArchivo(){
@@ -442,7 +327,6 @@ export class ArchivosComponent {
 	}
 
 	buildTreeFromList_setearDirectorioActual(idDirectorioActual){
-		console.log ('buildTreeFromList_setearDirectorioActual: ' + idDirectorioActual)
 		var archivos = this.archivos;
 		this.sessionService.setArchivosList(archivos);
 		var root :Archivo;
@@ -537,11 +421,15 @@ export class ArchivosComponent {
 			parentContext :that})
 		.subscribe((isConfirmed)=>{
 
+			if(isConfirmed) {
+
+
+				//codeMirrorRef.options.readOnly = false;
+				//componentRef.editDialogFired = true;
+			}
 		});
 	}
 	mkFile(){
-		console.log ('mkFile: Creando nuevo archivo')
-
 		var that = this;
 		let disposable = this.dialogService.addDialog(NuevoArchivo, {
 			nombre:'', 
@@ -549,98 +437,68 @@ export class ArchivosComponent {
 			esDirectorio:false,
 			parentContext :that})
 		.subscribe((isConfirmed)=>{
-			console.log ('mkFile: suscribe')
+
+			if(isConfirmed) {
+
+
+				//codeMirrorRef.options.readOnly = false;
+				//componentRef.editDialogFired = true;
+			}
 		});
 	}
 
-
-	seleccionarArchivo2 = function(arch: Archivo, contents: any) {
+	seleccionarArchivo = function(arch: Archivo){
 		if(arch.directorio){
 			this.directorioActual=arch;
-			this.directorioActual.archivos=contents;
 		}else {
 			this.sessionService.setDirectorioActual(this.directorioActual);
 			this.sessionService.cargarDependencias(arch);
 		}
-		//this.archivoSeleccionado = arch;
+		this.archivoSeleccionado = arch;	
 		this.preview = arch.contenido;
 		this.ordenarArchivos();
 	}
 
+	compartirArchivo(){
+		if(this.archivoSeleccionado){
+			var grupos = this.sessionService.getGrupos();
+			if(grupos == undefined){
+				this.haskellService.getGrupos(this.authService.getUser().cedula)
+				.subscribe(
+					gruposRest => {
+						this.sessionService.setGrupos(grupos);
+						this.dialogService.addDialog(CompartirArchivoComponent, {
+							grupos:gruposRest, 
+							archivo:this.archivoSeleccionado,
+							parent:this
+						})
+						.subscribe((isConfirmed)=>{
+							if(isConfirmed) {
+								this.notifService.success("confirmado?");
+							}
+						});
 
-	recargarDirectorioActual() {
-		this.loading = true;
-		
-		_.remove(this.archivos, (arch: Archivo) => 
-			this.directorioActual.archivos.some((archDA: Archivo) => 
-				_.isEqualWith(arch, archDA, (a1, a2) => a1.id===a2.id))
-		);
 
-		//elimino los archivos que tiene actualmente
-		this.directorioActual.archivos.splice(0,this.directorioActual.archivos.length);
-		this.directorioActual.contenido = null;
-		this.seleccionarArchivo(this.directorioActual);
-		
-	}
+					},
+					error => {
 
-	seleccionarArchivo = function(arch: Archivo) {
-		console.log ('seleccionarArchivo: ' , arch)
-		this.archivoClickeado = arch;
-		if (this.archivoSeleccionado && arch.id==this.archivoSeleccionado.id && !arch.directorio)
-			return;
-		this.showLoadingFileIndicator = true;
-		if (this.archivoSeleccionado && !this.archivoSeleccionado.directorio) {
-			this.archivoSeleccionado = undefined;
-			this.preview = '';
-		}
-		
-		//cargo el contenido del archivo en modo lazy
-		if (!arch.directorio && !arch.contenido) {
-			this.haskellService.getContenido( arch.moodleFilePath ).subscribe (
-				contents => {
-					this.showLoadingFileIndicator = false;
-					arch.contenido = contents;
-					this.archivoSeleccionado = arch;
-					this.seleccionarArchivo2(arch);
-				},
-				error => {
-					this.showLoadingFileIndicator = false;
-					console.log(error)
-				}
-			);
-		} else if (arch.directorio && !arch.contenido) {
-			console.log ('getDirectoryContents: ' , arch)
-			this.haskellService.getDirectoryContents(arch.moodleFilePath).subscribe (
-				contents => {
-					this.archivoClickeado = undefined;
-					this.showLoadingFileIndicator = false;
-					arch.contenido = "Seleccione un archivo para cargar su contenido ...";
-					this.archivoClickeado = undefined;
-					//TODO sacar si siempre viene de backend
-					if (contents) {
-						contents.map ((a: Archivo) => { if (!!a.directorioMatefun) a.directorioMatefun = arch.moodleFilePath });
-					}
-					this.archivos = this.archivos.concat(contents);
-					this.loading = false;
-					this.seleccionarArchivo2(arch, contents);
-				},
-				error => {
-					this.showLoadingFileIndicator = false;
-					this.archivoClickeado = undefined;
-					console.log(error)
-				}
-			);
-		} else {
-			this.showLoadingFileIndicator = false;
-			if (arch.directorio){
-				this.archivoClickeado = undefined;
-				this.seleccionarArchivo2(arch , this.archivos.filter( a => a.padreId==arch.id ) );
+					})
 			}else{
-				this.archivoSeleccionado = arch;
-				this.preview = arch.contenido;
+				this.dialogService.addDialog(CompartirArchivoComponent, {
+					grupos:grupos, 
+					archivo:this.archivoSeleccionado,
+					parent:this
+				})
+				.subscribe((isConfirmed)=>{
+					if(isConfirmed) {
+						this.notifService.success("confirmado?");
+					}
+				});
 			}
-
+		}else{
+			this.notifService.warning("Archivo no seleccionado");
 		}
+
 	}
 
 	hayArchivoOriginal(){

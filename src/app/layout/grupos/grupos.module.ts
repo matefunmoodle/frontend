@@ -8,13 +8,14 @@ import { NotificacionService } from '../../shared/services/notificacion.service'
 import { BootstrapModalModule } from 'ng2-bootstrap-modal';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { CodemirrorModule } from 'ng2-codemirror';
+import { CalificarEntrega } from './calificarEntrega.component';
 import { NotificacionModule } from '../../notificacion/notificacion.module'; 
 
 @NgModule({
     imports: [CommonModule, GruposRoutingModule, FormsModule,BootstrapModalModule, NgbModule, CodemirrorModule,NotificacionModule],
-    declarations: [GruposComponent],
+    declarations: [GruposComponent, CalificarEntrega],
     exports: [GruposComponent],
-    entryComponents: []
+    entryComponents: [CalificarEntrega]
 })
 
 export class GruposModule { }

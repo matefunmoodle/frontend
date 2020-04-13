@@ -4,7 +4,7 @@ import { Observable, Subject } from 'rxjs/Rx';
 import { WebsocketService } from './websocket.service';
 import { AuthenticationService } from './authentication.service';
 import { GHCI_URL } from '../config';
-import { Usuario } from '../objects/usuario';
+
 
 declare var $:any;
 declare var that :any ;
@@ -35,7 +35,8 @@ export class GHCIService {
 	consoleBuffer = [];
 
 	constructor(private authService:AuthenticationService,private router: Router){
-		this.conectarWS(GHCI_URL, Usuario.getUser().cedula, authService.getToken());
+		console.log("contructor ghci");
+		this.conectarWS(GHCI_URL, authService.getUser().cedula, authService.getToken());
 		setInterval( this.checkConnection.bind(this), 5000);	
 		setInterval( this.doPing.bind(this), 30000);	
 	}
@@ -90,7 +91,7 @@ export class GHCIService {
 				if(reason.code == 1008){
 					this.router.navigate(['/login']);
 				}
-				//console.log('Conexión con web socket cerrada',reason);
+				console.log('Conexión con web socket cerrada',reason);
 			}.bind(this)
 			this.connection.onmessage = this.onMessage.bind(this);
 		}
@@ -313,7 +314,7 @@ export class GHCIService {
 	}
 
 	checkConnection(){
-		var usuario = Usuario.getUser();
+		var usuario = this.authService.getUser();
 		var token = this.authService.getToken();
 		if(usuario && token && (!this.connection || this.connection.readyState == WebSocket.CLOSED)){
 			this.conectarWS(GHCI_URL, usuario.cedula, token);

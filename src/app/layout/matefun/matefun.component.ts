@@ -11,7 +11,7 @@ import { GHCIService } from '../../shared/services/ghci.service';
 import { AuthenticationService } from '../../shared/services/authentication.service';
 import { GHCI_URL } from '../../shared/config';
 import { Archivo } from '../../shared/objects/archivo';
-import { Configuracion, Usuario } from '../../shared/objects/usuario';
+import { Configuracion } from '../../shared/objects/usuario';
 import { ConfirmComponent } from './confirm.component';
 import { SeleccionarDirectorioComp } from './seleccionarDirectorio.component';
 import { DialogService } from "ng2-bootstrap-modal";
@@ -64,7 +64,6 @@ export class MateFunComponent {
     modificado = false;
     argumentoI = false;
     argumentoF = false;
-    guardandoArchivo = false;
     editableLoaded = false;
     editDialogFired = false;
     archivosTree :any;
@@ -100,18 +99,17 @@ export class MateFunComponent {
         if(!this.archivo || !this.archivo.id){
             this.newFile();
         }
-        this.guardandoArchivo = false;
         this.copiaContenidoArchivo = this.archivo.contenido;
         this.copiaNombreArchivo = this.archivo.nombre;
-        if(Usuario.getUser().configuracion){
-            var config: Configuracion = Usuario.getUser().configuracion;
+        if(authService.getUser().configuracion){
+            var config: Configuracion = authService.getUser().configuracion;
             if(config.fontSizeEditor<=30 && config.fontSizeEditor>=8){
                 this.configCodeMirror.fontSize = config.fontSizeEditor;
             }
             if(this.themes.some(theme => theme==config.themeEditor)){
                 this.configCodeMirror.theme = config.themeEditor;                
             }
-            localStorage.setItem('codeMirrorConfig',JSON.stringify(this.configCodeMirror));
+            sessionStorage.setItem('codeMirrorConfig',JSON.stringify(this.configCodeMirror));
             this.argumentoI = config.argumentoI;
             this.argumentoF = config.argumentoF;
 
@@ -129,7 +127,7 @@ export class MateFunComponent {
     updateConfig(theme){
         this.configCodeMirror.theme = theme;
         this.codemirror.instance.setOption('theme', theme); 
-        localStorage.setItem('codeMirrorConfig',JSON.stringify(this.configCodeMirror));
+        sessionStorage.setItem('codeMirrorConfig',JSON.stringify(this.configCodeMirror));
     }
 
     lockSaveButton (){
@@ -187,8 +185,8 @@ export class MateFunComponent {
         });
 
         this.codemirror.instance.on("keypress",function(cm,name,evt){
-            
-            if(!that.editDialogFired && Usuario.getUser().esDocente() && cm.options.readOnly){
+
+            if(!that.editDialogFired && JSON.parse(sessionStorage.currentUser).tipo === "docente" && cm.options.readOnly){
                 codeMirrorRef = that.codemirror.instance;
                 componentRef = that;
                 that.showConfirm(); 
@@ -205,7 +203,7 @@ export class MateFunComponent {
         var reiniciar = confUser.argumentoF != this.argumentoF || confUser.argumentoI != this.argumentoI;
         config.argumentoF = this.argumentoF;
         config.argumentoI = this.argumentoI;
-        this.usuarioService.actualizarConfiguracion(Usuario.getUser().cedula,config)
+        this.usuarioService.actualizarConfiguracion(this.authService.getUser().cedula,config)
         .subscribe(
             success=> {
                 //this.ghciService.consoleRef.Write("Configuración guardada"  + "\n");
@@ -256,38 +254,39 @@ export class MateFunComponent {
     }
 
     ngOnInit() {
+
         this.ghciService.rendered(); 
 
 
-        this.haskellService.getArchivos(Usuario.getUser().cedula)
+        this.haskellService.getArchivos(this.authService.getUser().cedula)
         .subscribe(
             archivos => {
                 //.filter(function(a){return !a.eliminado})
                 this.buildTreeFromList(archivos);
 
             }, 
-            error => {});
+            error => console.log("Error al obtener los archivos del alumno") 
+            );
 
         function KeyPress(e) {
 
             var evtobj = window.event? event : e
             if (evtobj.keyCode == 90 && evtobj.ctrlKey){
                 //alert("Ctrl+z")
-            }; 
-
-            if(!!evtobj.key && evtobj.key.toLowerCase() ==="a" && evtobj.ctrlKey){
+            };
+            if(evtobj.key.toLowerCase() ==="a" && evtobj.ctrlKey){
                 componentRef.seleccionarDirectorio();
                 return false;
-            }else if(!!evtobj.key && evtobj.key.toLowerCase() ==="e" && evtobj.ctrlKey){
+            }else if(evtobj.key.toLowerCase() ==="e" && evtobj.ctrlKey){
                 componentRef.downloadFile();
                 return false;
-            } else if(!!evtobj.key && evtobj.key.toLowerCase() ==="r" && evtobj.ctrlKey){
+            } else if(evtobj.key.toLowerCase() ==="r" && evtobj.ctrlKey){
                 componentRef.reiniciarInterprete();
                 return false;
-            } else if(!!evtobj.key && evtobj.key.toLowerCase() ==="g" && evtobj.ctrlKey){
+            } else if(evtobj.key.toLowerCase() ==="g" && evtobj.ctrlKey){
                 componentRef.guardarArchivo();
                 return false;
-            } else if(!!evtobj.key && evtobj.key.toLowerCase() ==="o" && evtobj.ctrlKey){
+            } else if(evtobj.key.toLowerCase() ==="o" && evtobj.ctrlKey){
                 document.getElementById("popover").click();
                 return false;
             } else if(evtobj.ctrlKey && evtobj.altKey && evtobj.key.toLowerCase() ==="p"){
@@ -308,10 +307,10 @@ export class MateFunComponent {
                 componentRef.ghciService.focusConsole();
                 focus = "graficas";
                 return false;
-            }  else if(!!evtobj.key && evtobj.key.toLowerCase() ==="p" && evtobj.ctrlKey && !evtobj.altKey){
+            }  else if(evtobj.key.toLowerCase() ==="p" && evtobj.ctrlKey && !evtobj.altKey){
                 componentRef.runCode();
                 return false;
-            }
+            } 
         }
         document.onkeydown = KeyPress;
     }
@@ -393,7 +392,7 @@ export class MateFunComponent {
     }
     newFile(){
         this.archivo = new Archivo();
-        this.archivo.cedulaCreador = Usuario.getUser().cedula;
+        this.archivo.cedulaCreador = this.authService.getUser().cedula;
         this.archivo.contenido = "";
         this.archivo.nombre = "";
         this.copiaNombreArchivo = '';
@@ -408,17 +407,7 @@ export class MateFunComponent {
         }
     }
 
-    showSaveBtn() {
-        return (!!this.archivo && !!this.archivo.estado)
-                    && (this.archivo.estado != "Entregado" && this.archivo.estado != "Corregido");
-    }
-
     guardarArchivo(){
-
-        console.log ('guardar: ' , this.archivo)
-
-        return;
-        /*
         var regex = /^[A-Z]/
         if(this.archivo.nombre.trim() == ""){
             this.notifService.error("Nombre de archivo sin especificar");
@@ -426,26 +415,20 @@ export class MateFunComponent {
             this.notifService.error("Nombre de archivo debe iniciar con mayusula.")
         }else{
             if(this.archivo.id){
-                this.guardandoArchivo = true;
                 this.haskellService.editarArchivo(this.archivo.id, this.archivo)
                 .subscribe(
                     archivo => {
-                        this.guardandoArchivo = false;
-                        this.notifService.success('Archivo ' + archivo.nombre + ' guardado con exito.');
-                        archivo.contenido = atob(archivo.contenido);
+                        //this.ghciService.consoleRef.Write("Editar archivo: " + this.archivo.nombre + "\n");
                         this.archivo = archivo;
                         this.lockSaveButton();
                     }, 
                     error => {
-                        this.guardandoArchivo = false;
                         this.notifService.error(error);
                     });
             }else{
-                console.log ('va para crear')
                 this.haskellService.crearArchivo(this.archivo)
                 .subscribe(
                     archivo => {
-                        console.log ('editar crear: ' , archivo)
                         //this.ghciService.consoleRef.Write("Archivo creado: " + this.archivo.nombre + "\n");
                         this.archivo = archivo;
                         this.lockSaveButton();
@@ -456,7 +439,6 @@ export class MateFunComponent {
 
             }
         }
-        */
     }
     runCode(){
 
@@ -475,7 +457,7 @@ export class MateFunComponent {
                 return;
             }
             if(this.archivo.id){
-                if(this.archivo.editable || Usuario.getUser().esDocente()){
+                if(this.archivo.editable || this.authService.getUser().tipo == 'docente'){
                     this.haskellService.editarArchivo(this.archivo.id, this.archivo)
                     .subscribe(
                         archivo => {

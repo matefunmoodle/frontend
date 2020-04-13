@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { DialogComponent, DialogService } from "ng2-bootstrap-modal";
 import { Archivo } from '../../shared/objects/archivo';
-import { Usuario } from '../../shared/objects/usuario';
 export interface ConfirmModel {
   title:string;
   message:string;
@@ -61,7 +60,7 @@ export class SeleccionarDirectorioComp extends DialogComponent<ConfirmModel, boo
         this.parent.notifService.error("Nombre de archivo debe iniciar con mayusula.");
     }else{
       var archivo:Archivo = new Archivo();
-      archivo.cedulaCreador = Usuario.getUser().cedula;
+      archivo.cedulaCreador = this.parent.authService.getUser().cedula;
       archivo.contenido = "";
       archivo.nombre = this.nombre;
       archivo.directorio = false;

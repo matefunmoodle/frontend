@@ -1,5 +1,5 @@
 import { Component, HostListener, ViewChild, ElementRef } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+
 import { AuthenticationService } from '../../services/authentication.service';
 import { Usuario } from '../../objects/usuario';
 
@@ -14,10 +14,8 @@ export class SidebarComponent {
 
     usuario: Usuario;
 
-    constructor(private authService: AuthenticationService,
-                private route: ActivatedRoute,
-                private router: Router,) {
-        this.usuario = Usuario.getUser();
+    constructor(private authService: AuthenticationService) {
+        this.usuario = authService.getUser();
     }
 
     eventCalled() {
@@ -32,30 +30,17 @@ export class SidebarComponent {
         }
     }
 
-
     toggleSidebar() {
         const dom: any = document.querySelector('body');
         dom.classList.toggle('push-right');
     }
 
-    esAlumno() : boolean{
-        this.usuario = Usuario.getUser();
-        return this.usuario.esAlumno();
+    esAlumno(){
+        return this.usuario.tipo == "alumno";
     }
 
-    esDocente() : boolean{
-        this.usuario = Usuario.getUser();
-        return this.usuario.esDocente();
-    }
-
-    esAdmin() : boolean{
-        this.usuario = Usuario.getUser();
-        return this.usuario.esAdmin();
-    }
-
-    esAdminLiceo() : boolean{
-        this.usuario = Usuario.getUser();
-        return this.usuario.esAdminLiceo();
+    esDocente(){
+        return this.usuario.tipo == "docente";
     }
 
     @ViewChild('sidebarNav') sidebarNav: ElementRef;
