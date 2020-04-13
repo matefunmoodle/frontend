@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
-
+import { CalificarEntrega } from './grupos/calificarEntrega.component';
 import { LayoutRoutingModule } from './layout-routing.module';
 import { LayoutComponent } from './layout.component';
 import { HeaderComponent, SidebarComponent } from '../shared';
@@ -23,8 +23,10 @@ import { NotificacionModule } from '../notificacion/notificacion.module';
     declarations: [
         LayoutComponent,
         HeaderComponent,
-        SidebarComponent
+        SidebarComponent,
+        CalificarEntrega
     ],
+    entryComponents: [CalificarEntrega],
     providers: [AuthenticationService, HaskellService]
 })
 export class LayoutModule { }

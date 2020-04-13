@@ -33,6 +33,7 @@ export interface ConfirmModel {
                   </div>
 
                   <div class="modal-footer">
+                    <p *ngIf="errorMsg" style="color: red; font-size: smaller">{{errorMsg}}</p>
                     <button type="button" class="btn btn-success" (click)="confirm()">Crear</button>
                   </div>
 
@@ -43,15 +44,26 @@ export class NuevoArchivo extends DialogComponent<ConfirmModel, boolean> impleme
   nombre: string;
   esDirectorio: boolean;
   descripcion: string;
+  errorMsg: string = undefined;
   parentContext: any;
   constructor(dialogService: DialogService) {
     super(dialogService);
   }
   confirm() {
-    var nombre = this.nombre;
-    var desc = this.descripcion;
-    var archivo : Archivo;
-    archivo = new Archivo();
+    
+    let archivo: Archivo = new Archivo();
+    archivo.nombre = this.nombre.toLowerCase().endsWith('.mf') ? this.nombre : this.nombre + '.mf';
+    
+    console.log ('nombre: ' + archivo.nombre);
+    console.log ('nombres: ' , this.parentContext.directorioActual.archivos.map ((a : Archivo) => a.nombre ));
+    const exists = this.parentContext.directorioActual.archivos.find ((a: Archivo) => a.nombre===archivo.nombre);
+    if (exists){
+      this.errorMsg = "Ya existe un archivo con el nombre '"+archivo.nombre+"' en el directorio actual."
+      window.setTimeout (() => {this.errorMsg = undefined} , 4000);
+      return;
+    }
+
+    let desc = this.descripcion;
     archivo.cedulaCreador = this.parentContext.directorioActual.cedulaCreador;
     if(this.esDirectorio){
       archivo.contenido = desc;
@@ -61,21 +73,24 @@ export class NuevoArchivo extends DialogComponent<ConfirmModel, boolean> impleme
     archivo.directorio = this.esDirectorio;
     archivo.editable = true;
     archivo.fechaCreacion  = new Date();
-    archivo.nombre = nombre;
     archivo.padreId =  this.parentContext.directorioActual.id;
+    archivo.directorioMatefun = this.parentContext.directorioActual.moodleFilePath==null ? '/' : this.parentContext.directorioActual.moodleFilePath;
     var that = this.parentContext;
     var regex = /^[A-Z]/
-    if(regex.test(nombre)){
+    if(regex.test(this.nombre)){
+      this.parentContext.creandoArchivo = true;
       this.parentContext.haskellService.crearArchivo(archivo).subscribe(
-                      archivo => {
-                        var id = that.directorioActual.id;
-                        that.recargarArchivos(id);        
-                      }, 
-                      error => {
-                          this.parentContext.notifService.error(error);
-                      });
-      
-
+        archivo => {
+          console.log ('porqueriaNueva: ' , archivo)
+          this.parentContext.creandoArchivo = false;
+          this.parentContext.notifService.success('Archivo ' + archivo.nombre + ' creado con exito.');
+          //that.recargarArchivos(that.directorioActual.id);
+          that.recargarDirectorioActual();
+        }, 
+        error => {
+          this.parentContext.creandoArchivo = false;
+          this.parentContext.notifService.error(error);
+        });
       this.close();
     }else{
       alert("Nombre de archivo debe iniciar con mayusula.")

@@ -1,33 +1,55 @@
-<div class="login-page" style="background: #004869;">
-    <div class="row">
-        <div class="col-md-4 push-md-4" style="padding: 55px 35px;background: rgba(255,255,255,0.15);border-radius: 8px;">
-            <h1>MateFun</h1>
-            <form role="form">
-                <div class="form-content">
-                    <div class="form-group">
-                        <input type="text" [(ngModel)]=model.cedula  name="cedula" class="form-control input-underline input-lg"  placeholder="Usuario">
+<div *ngIf="showPage">
+    <div class="login-page" style="background: #004869;">
+        <div class="row">
+            <div class="col-md-4 push-md-4" style="padding: 55px 35px;background: rgba(255,255,255,0.15);border-radius: 8px;">
+                <h1>MateFun</h1>
+
+                <form role="form">
+                    <div class="form-content">
+                        
+                        <div *ngIf="loginCommands" id="loginCommands">
+                            <div class="form-group">
+                                <input type="text" (ngModelChange)="cedulaChange($event)" [(ngModel)]=model.cedula  name="cedula" class="form-control input-underline input-lg"  placeholder="Usuario">
+                            </div>
+                            <div class="form-group">
+                                <input type="password" [(ngModel)]=model.password (keyup.enter)=login() name="password" class="form-control input-underline input-lg"  placeholder="Contraseña">
+                            </div>
+                            <div *ngIf="mostrarSelect" class="rectangle">
+                                <img *ngIf="!liceoscargados" width=50 src="assets/img/cargaliceo.gif" alt="CARGA LICEO">
+                                <div *ngIf="liceoscargados && !errorCargaLiceo" class="form-group">
+                                    <p *ngIf="!soloHayUnLiceo" >Seleccione un liceo</p>
+                                    <select *ngIf="!soloHayUnLiceo" [(ngModel)]="liceoSeleccionado" [ngModelOptions]="{standalone: true}">
+                                        <option *ngFor="let school of schoolList" value="{{school.liceoid}}">{{school.nombre}}</option>
+                                    </select>
+                                </div>
+                                <p *ngIf="liceoscargados && soloHayUnLiceo" style="color:#2BCD2B;">Te vas a conectar a: <span style="font-weight: bold">{{schoolList[0].nombre}}</span></p>
+                                <p *ngIf="errorCargaLiceo" style="color:red;">{{mensaje}}</p>
+                            </div>
+                            <div *ngIf="!mostrarSelect" class="rectangle">
+                                <p *ngIf="!errorCargaLiceo" style="font-weight: bold; color:#2BCD2B;">{{mensaje}}</p>
+                                <p *ngIf="errorCargaLiceo" style="color:red; font-weight: bold;">{{mensaje}}</p>
+                            </div>                  
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <input type="password" [(ngModel)]=model.password (keyup.enter)=login() name="password" class="form-control input-underline input-lg"  placeholder="Contraseña">
+                    <div *ngIf="loginCommands">
+                        <a *ngIf="!errorCargaLiceo || matefunAdmin==model.cedula" class="btn rounded-btn" style="background: transparent;color: white;cursor: pointer;width: 159px;margin-right: 3px;" (click)=login()> Iniciar Sesión </a>
+                        <a *ngIf="matefunAdmin!=model.cedula" class="btn rounded-btn" style="background: transparent;color: white;cursor: pointer;width: 159px;margin-left: 3px;" (click)=invitado()> Invitado </a>
+                        &nbsp;
                     </div>
-                    
-                </div>
 
-                <a class="btn rounded-btn" style="background: transparent;color: white;cursor: pointer;width: 159px;margin-right: 3px;" (click)=login()> Iniciar Sesión </a>
-                <a class="btn rounded-btn" style="background: transparent;color: white;cursor: pointer;width: 159px;margin-left: 3px;" (click)=invitado()> Invitado </a>
-                &nbsp;
-                <div class="loading" *ngIf="loading">
-                    <div class="loading-bar"></div>
-                    <div class="loading-bar"></div>
-                    <div class="loading-bar"></div>
-                </div>
-                <div class="login-error" *ngIf="error && !loading">
-                    <ngb-alert [dismissible]="false" [type]="'danger'">
-                        <strong>Error!</strong> {{errorText}}.
-                    </ngb-alert>
-                </div>
-            </form>
+                    <div class="loading" *ngIf="loading">
+                        <div class="loading-bar"></div>
+                        <div class="loading-bar"></div>
+                        <div class="loading-bar"></div>
+                    </div>
+                    <div class="login-error" *ngIf="error && !loading">
+                        <ngb-alert [dismissible]="false" [type]="'danger'">
+                            <strong>Error!</strong> {{errorText}}.
+                        </ngb-alert>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
