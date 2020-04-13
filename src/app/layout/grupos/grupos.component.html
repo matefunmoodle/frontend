@@ -2,71 +2,54 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-lg-5">
-            <label for="search">Nombre del archivo:</label>
+            <label for="search">Busqueda: </label>
             <div class="input-group">
             <!--[(ngModel)]=filtroNombre-->
-                <input type="text" class="form-control" id="search" >
+                <input type="text" class="form-control" id="search" [(ngModel)]=filtroBusqueda>
                 <span class="input-group-addon fa fa-search">
                 </span>
             </div>
         </div>
+        <div *ngIf="calificando" class="col-lg-7" style="text-align: right">
+            <img width=40 src="assets/img/btnloading.gif" /> <br/>
+            <span>Corrigiendo archivo</span>
+        </div>
     </div>
     <div class="row" style="margin-top: 20px">
         <div class="col-lg-5">
-            <div class="card" *ngIf="grupoSeleccionado == undefined">
-                <div class="card-header">
-                    <div *ngIf="grupoSeleccionado==undefined">Grupos</div>
-                </div>
-                <div class="card-block" *ngIf="grupoSeleccionado == undefined">
-                    <div class="row listado-grupos" style="min-height: 100px; overflow-y: scroll;">
-                        <div class="loading" *ngIf="loading">
-                            <div class="loading-bar"></div>
-                            <div class="loading-bar"></div>
-                            <div class="loading-bar"></div>
-                            <div class="loading-bar"></div>
-                        </div>
-                        <div *ngFor="let grupo of grupos" (click)="seleccionarGrupo(grupo)" class="col-sm-3 col-4 " style="text-align: center;">
-                            <i class="fa fa-users" style="font-size: 3em; cursor: pointer;color: #f95e5e;" aria-hidden="true"></i>
-                            <p style="cursor: pointer;">{{grupo.grado + '°' + grupo.grupo+" - "+grupo.anio}}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <ngb-tabset *ngIf="grupoSeleccionado" [destroyOnHide]=false>
-                <ngb-tab title="Alumnos">
+            
+            <ngb-tabset *ngIf="modoGrupal && grupoSeleccionado == undefined && cursoSeleccionado == undefined" [destroyOnHide]=false>
+                <ngb-tab title="Entregas Grupales">
                     <ng-template ngbTabContent>
                         <div class="card">
-                            <div>
-                                <button class="btn btn-sm btn-secondary pull-right" style="cursor: pointer; margin-top: -35px; margin-right: 105px;" (click)="desseleccionarGrupo()" ngbPopover="Atras" data-placement="bottom" triggers="mouseenter:mouseleave">
-                                    <i class="fa fa-arrow-up"></i>
-                                </button>
-                                <p class="pull-right" style="margin-top: -34px; margin-right: 5px;">{{grupoSeleccionado.grado+ '°' + grupoSeleccionado.grupo+" - "+grupoSeleccionado.anio}}</p>
-                            </div>
+                            <!-- Grupales: Grupos -->
                             <div class="card-block">
                                 <div class="row listado-grupos" style="min-height: 100px; overflow-y: scroll;">
-                                    <div *ngFor="let alumno of grupoSeleccionado.alumnos" (click)="seleccionarAlumno(alumno)" class="col-sm-3 " style="text-align: center;">
-                                        <i class="fa fa-user" style="font-size: 3em; cursor: pointer;color: #f95e5e;" aria-hidden="true"></i>
-                                        <p style="cursor: pointer;">{{alumno.apellido +', ' + alumno.nombre}}</p>
+                                    <div class="loading" *ngIf="loading">
+                                        <div class="loading-bar"></div>
+                                        <div class="loading-bar"></div>
+                                        <div class="loading-bar"></div>
+                                        <div class="loading-bar"></div>
+                                    </div>
+                                    <div *ngFor="let grupo of filtroBusquedaGrupos" (click)="seleccionarGrupo(grupo)" class="col-sm-3 col-4 " style="text-align: center;">
+                                        <i class="fa fa-users" style="font-size: 3em; cursor: pointer;color: #f95e5e;" aria-hidden="true"></i>
+                                        <p style="cursor: pointer;">{{ grupo.grupo }}</p>
+                                        <p style="cursor: pointer; margin-top: -15px;"><b>{{grupo.nombreCurso}}</b></p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </ng-template>
                 </ngb-tab>
-                <ngb-tab title="Archivos">
+                <ngb-tab id="tabEi" title="Entregas Individuales" *ngIf="cursoSeleccionado == undefined">
                     <ng-template ngbTabContent>
                         <div class="card">
-                            <div>
-                                <button class="btn btn-sm btn-secondary pull-right" style="cursor: pointer; margin-top: -35px; margin-right: 105px;" (click)="desseleccionarGrupo()"  ngbPopover="Atras" data-placement="bottom" triggers="mouseenter:mouseleave">
-                                    <i class="fa fa-arrow-up"></i>
-                                </button>
-                                <p class="pull-right" style="margin-top: -34px; margin-right: 5px;">{{grupoSeleccionado.grado+ '°' + grupoSeleccionado.grupo+" - "+grupoSeleccionado.anio}}</p>
-                            </div>
+                            <!-- INDIVIDUALES: cursos -->
                             <div class="card-block">
-                                <div class="row listado-grupos" style="min-height: 100px; overflow-y: scroll;">
-                                    <div *ngFor="let archivo of grupoSeleccionado.archivos " (click)="seleccionarArchivo(archivo)" class="col-sm-3 col-4" style="text-align: center;">
-                                        <i class="fa fa-file-text" style="font-size: 3em; cursor: pointer;color: #ff8383" aria-hidden="true"></i>
-                                        <p style="cursor: pointer;">{{archivo.nombre}}</p>
+                                <div class="row listado-cursos" style="min-height: 100px; overflow-y: scroll;">
+                                    <div *ngFor="let curso of filtroBusquedaCursos" (click)="seleccionarCurso(curso)" class="col-sm-3 " style="text-align: center;">
+                                        <i class="fa fa-graduation-cap" style="font-size: 3em; cursor: pointer;color: #f95e5e;" aria-hidden="true"></i>
+                                        <p style="cursor: pointer;">{{curso.fullname }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -74,14 +57,127 @@
                     </ng-template>
                 </ngb-tab>
             </ngb-tabset>
+
+            <ngb-tabset [destroyOnHide]=false>
+                <ngb-tab *ngIf="grupoSeleccionado" title="Alumnos">
+                    <ng-template ngbTabContent>
+                        <div class="card">
+                            <!-- Grupales: Alumnos -->
+                            <div style="margin-top: -30px;">
+                                <button class="btn btn-sm btn-secondary pull-right" style="cursor: pointer;" (click)="refrescar()"  ngbPopover="Recargar" data-placement="bottom" triggers="mouseenter:mouseleave">
+                                    <i class="fa fa-refresh" aria-hidden="true"></i>
+                                </button>
+                                <button class="btn btn-sm btn-secondary pull-right" style="cursor: pointer;" (click)="desseleccionarGrupo()"  ngbPopover="Atras" data-placement="bottom" triggers="mouseenter:mouseleave">
+                                    <i class="fa fa-arrow-up"></i>
+                                </button>
+                            </div>
+                            <div class="card-block">
+                                <div class="row listado-grupos" style="min-height: 100px; overflow-y: scroll;">
+                                    <div *ngFor="let alumno of filtroBusquedaAlumnos" (click)="seleccionarAlumno(alumno)" class="col-sm-3 " style="text-align: center;">
+                                        <i class="fa fa-user" [ngClass]="{'selected': !!alumnoSeleccionado && alumnoSeleccionado.moodleUserId===alumno.moodleUserId , 'gray': alumno.archivos.length==0}" style="font-size: 3em; cursor: pointer;color: #f95e5e;" aria-hidden="true"></i>
+                                        <p style="cursor: pointer;">{{alumno.apellido +', ' + alumno.nombre}}</p>
+                                        <p style="cursor: pointer; margin-top: -15px;"><b>{{ grupoSeleccionado.grupo }}</b></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-template>
+                </ngb-tab>
+
+                
+                <ngb-tab *ngIf="modoGrupal && grupoSeleccionado" title="Archivos ({{this.grupoSeleccionado.archivos.length}})">
+                    <ng-template ngbTabContent>
+                        <div class="card">
+                            <!-- Grupales: Archivos -->
+                            <div style="margin-top: -30px;">
+                                <button class="btn btn-sm btn-secondary pull-right" style="cursor: pointer;" (click)="refrescar()"  ngbPopover="Recargar" data-placement="bottom" triggers="mouseenter:mouseleave">
+                                    <i class="fa fa-refresh" aria-hidden="true"></i>
+                                </button>
+                                <button class="btn btn-sm btn-secondary pull-right" style="cursor: pointer;" (click)="desseleccionarGrupo()"  ngbPopover="Atras" data-placement="bottom" triggers="mouseenter:mouseleave">
+                                    <i class="fa fa-arrow-up"></i>
+                                </button>
+                            </div>
+                            <div class="card-block">
+                                <div class="row listado-grupos" style="min-height: 100px; overflow-y: scroll;">
+                                    <div *ngFor="let archivo of filtroBusquedaArchivos" (click)="seleccionarArchivo(archivo)" class="col-sm-3 col-4" style="text-align: center;">
+                                        <i class="fa fa-file-text" [ngClass]="{'selected': !!archivoSeleccionado && archivoSeleccionado.id===archivo.id,'corregido': archivo.evaluacion.corregido }" style="font-size: 3em; cursor: pointer;color: #ff8383" aria-hidden="true"></i>
+                                        <p style="cursor: pointer;">{{archivo.nombre}}</p>
+                                        <p style="cursor: pointer; margin-top: -15px;"><b>{{archivo.evaluacion.assignmentName}}</b></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-template>
+                </ngb-tab>
+
+                <ngb-tab title="{{cursoSeleccionado.fullname}}" *ngIf="!modoGrupal && !!cursoSeleccionado && !alumnoIndividualSeleccionado">
+                    <ng-template ngbTabContent>
+                        <div class="card">
+                            <!-- Individuales Alumnos -->
+                            <div style="margin-top: -30px;">
+                                <button class="btn btn-sm btn-secondary pull-right" style="cursor: pointer;" (click)="refrescar()"  ngbPopover="Recargar" data-placement="bottom" triggers="mouseenter:mouseleave">
+                                    <i class="fa fa-refresh" aria-hidden="true"></i>
+                                </button>
+                                <button class="btn btn-sm btn-secondary pull-right" style="cursor: pointer;" (click)="desseleccionarCurso()"  ngbPopover="Atras" data-placement="bottom" triggers="mouseenter:mouseleave">
+                                    <i class="fa fa-arrow-up"></i>
+                                </button>
+                            </div>
+                            <div class="card-block">
+                                <div class="loading" *ngIf="loadingIndividual">
+                                    <div class="loading-bar"></div>
+                                    <div class="loading-bar"></div>
+                                    <div class="loading-bar"></div>
+                                    <div class="loading-bar"></div>
+                                </div>
+                                <div *ngIf="!loadingIndividual" class="row listado-cursos" style="min-height: 100px; overflow-y: scroll;">
+                                    <div *ngFor="let alumno of filtroBusquedaAlumnosIndividual" (click)="seleccionarAlumnoIndividual(alumno)" class="col-sm-3 " style="text-align: center;">
+                                        <i class="fa fa-user" [ngClass]="{'gray': alumno.archivos.length==0 }"  style="font-size: 3em; cursor: pointer;color: #f95e5e;" aria-hidden="true"></i>
+                                        <span>({{ alumno.archivos.length }})</span>
+                                        <p style="cursor: pointer;">{{alumno.apellido +', ' + alumno.nombre}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-template>
+                </ngb-tab>
+
+
+                <ngb-tab title="{{ alumnoIndividualSeleccionado.nombre + ' ' + alumnoIndividualSeleccionado.apellido }}" *ngIf="!modoGrupal && !!cursoSeleccionado && !!alumnoIndividualSeleccionado">
+                    <ng-template ngbTabContent>
+                        <div class="card">
+                            <!-- Individuales Archivos -->
+                            <div style="margin-top: -30px;">
+                                <button class="btn btn-sm btn-secondary pull-right" style="cursor: pointer;" (click)="refrescar()"  ngbPopover="Recargar" data-placement="bottom" triggers="mouseenter:mouseleave">
+                                    <i class="fa fa-refresh" aria-hidden="true"></i>
+                                </button>
+                                <button class="btn btn-sm btn-secondary pull-right" style="cursor: pointer;" (click)="desseleccionarAlumnoIndividual()"  ngbPopover="Atras" data-placement="bottom" triggers="mouseenter:mouseleave">
+                                    <i class="fa fa-arrow-up"></i>
+                                </button>
+                            </div>
+                            <div class="card-block">
+                                <div class="row listado-grupos" style="min-height: 100px; overflow-y: scroll;">
+                                    <div *ngFor="let archivo of filtroBusquedaArchivosIndividual" (click)="seleccionarArchivo(archivo)" class="col-sm-3 col-4" style="text-align: center;">
+                                        <i class="fa fa-file-text" [ngClass]="{'selected': !!archivoSeleccionado && archivoSeleccionado.id===archivo.id,'corregido': archivo.evaluacion.corregido }" style="font-size: 3em; cursor: pointer;color: #ff8383" aria-hidden="true"></i>
+                                        <p style="cursor: pointer;">{{archivo.nombre}}</p>
+                                        <p style="cursor: pointer; margin-top: -15px;"><b>{{archivo.evaluacion.assignmentName}}</b></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-template>
+                </ngb-tab>
+
+
+            </ngb-tabset>
         </div>
         <div class="col-lg-7">
             <div class="card" *ngIf="alumnoSeleccionado">
                 <div class="card-block">
                     <div class="row listadoEntregasAlumnoGrupos" style="min-height: 100px; overflow-y: scroll;" >
                         <div *ngFor="let entrega of alumnoSeleccionado.archivos" (click)="seleccionarEntrega(entrega)" class="col-sm-3 col-4" style="text-align: center;">
-                            <i [ngStyle]="" class="fa fa-file-text" style="font-size: 3em; cursor: pointer;" aria-hidden="true"></i>
+                            <i [ngClass]="{'corregido': entrega.evaluacion.corregido }" class="fa fa-file-text" style="font-size: 3em; cursor: pointer;" aria-hidden="true"></i>
                             <p style="cursor: pointer;">{{entrega.nombre}}</p>
+                            <p style="cursor: pointer; margin-top: -15px;"><b>{{entrega.evaluacion.assignmentName}}</b></p>
                         </div>
                         <div *ngIf="alumnoSeleccionado.archivos.length == 0" style="width: 100%; text-align: center;">
                             <i style="color: rgb(220,220,220); font-size: 10em; padding: 0.1em" class="fa fa-file-text"></i>
@@ -103,15 +199,21 @@
 
             <div class="card" *ngIf="archivoSeleccionado" >
                 <div class="card-header">
-                    <button *ngIf="tipoArchivo == 'entrega'" class="btn btn-sm btn-secondary pull-left mr-2" (click)="calificarEntrega()">
-                        Calificar
+                        <!-- *ngIf="tipoArchivo == 'entrega'" -->
+                    <button *ngIf="archivoSeleccionado.contenido!=null" class="btn btn-sm btn-secondary pull-left mr-2" (click)="calificarEntrega()">
+                        {{ archivoSeleccionado.evaluacion.corregido ? 'Ver detalle' : 'Calificar' }}
                     </button>
-                    <button *ngIf="esArchivoGrupo()"  ngbPopover="Cargar/Editar" data-placement="bottom" triggers="mouseenter:mouseleave" class="btn btn-sm btn-secondary pull-left mr-2" (click)="cargarArchivoCompartido()">
+                    <button *ngIf="archivoSeleccionado.contenido!=null" ngbPopover="{{ 'Cargar' + ( (archivoSeleccionado.estado != 'Entregado' && archivoSeleccionado.estado != 'Corregido') ? '/Editar' : '' ) }}" data-placement="bottom" triggers="mouseenter:mouseleave" class="btn btn-sm btn-secondary pull-left mr-2" (click)="cargarArchivoCompartido()">
                         <i class="fa fa-pencil"></i>
                     </button>
                     <div class="pull-left" >
-                        Nombre: {{archivoSeleccionado?.nombre}} - Creado: {{archivoSeleccionado?.fechaCreacion | date}}
+                        Nombre: {{archivoSeleccionado?.nombre}} - Creado: {{ convertirFecha(archivoSeleccionado?.fechaCreacion) }} - Estado: {{archivoSeleccionado?.estado}}
                     </div>
+
+                    <div class="pull-right" *ngIf="showLoadingFileIndicator">
+                        cargando <img width=20 src="assets/img/cargaliceo.gif" alt=" ...">
+                    </div>
+
                 </div>
                 <codemirror class="codemirrorGrupos" [(ngModel)]="archivoSeleccionado.contenido" [config]="configCodeMirror" [ngStyle]="{'font-size': configCodeMirror.fontSize+'px'}">
                 </codemirror>

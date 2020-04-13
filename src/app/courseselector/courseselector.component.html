@@ -1,0 +1,24 @@
+<div class="courseselectormain">
+	
+
+	<div>
+		<h5>Bienvenido {{usuario.nombre + ' ' + usuario.apellido}}</h5>	
+		
+	</div>
+	<div>
+		<p>Usted esta asociado a mas de un curso que utiliza matefun</p>	
+	</div>
+
+	<div>
+		<h5>Seleccione un curso</h5>
+
+		<p *ngFor="let curso of cursos">
+
+		  <app-courselink courseid="{{curso.courseId}}" roleid="{{curso.roleId}}" text="{{curso.courseName}} con el rol de {{curso.roleName}}">
+		  </app-courselink>
+		</p>
+
+
+	</div>
+
+</div>

@@ -1,0 +1,118 @@
+
+
+<div class="row">
+	
+	
+		<div class="col-md-2">
+		</div>
+
+		<div id="matricular" class="col-md-4 bordergray paddingbottomtop">
+
+			<div class="row">
+				<div class="col-md-2"></div>
+				<div class="col-md-8"><p>Ingresar nueva actividad</p></div>
+				<div class="col-md-2"></div>
+			</div>
+
+			<div id="matricular"class="row">
+				<div class="col-md-1"></div>
+
+				<div class="col-md-10 paddingbottomtop">
+			        <label for="nombreactividad">Nombre de actividad:</label>
+			        <input type="text" class="form-control" id="nombreactividad">
+				</div>
+
+		        <div class="col-md-1"></div>
+			</div>
+
+			<div class="row">
+
+				<div class="col-md-1"></div>
+
+				<div class="col-md-10 paddingbottomtop">
+				     <label for="topic">Seleccione el topic al que pertenece</label>
+				     <select class="form-control" id="topic">
+				        <option>Funciones</option>
+				        <option>Topic 2</option>
+				        <option>Topic 3</option>
+				        <option>Topic 4</option>
+				        <option>Topic 5</option>
+				     </select>
+				</div>
+
+				<div class="col-md-1"></div>
+
+			</div>
+
+			<div class="row">
+				<div class="col-md-1"></div>
+				<div class="col-md-10 paddingbottomtop">
+					<label for="fechalimiteentrega">Fecha limite de entrega</label>
+					<form class="form-inline">
+					  <div class="form-group">
+					    <div class="input-group">
+					      <input class="form-control" placeholder="yyyy-mm-dd"
+					             name="dp" id="fechalimiteentrega" ngbDatepicker #d="ngbDatepicker">
+					      <div class="input-group-append">
+					        <button class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button"></button>
+					      </div>
+					    </div>
+					  </div>
+					</form>		
+				</div>
+				<div class="col-md-1"></div>	
+			</div>
+
+			<div class="row">
+				<div class="col-md-8"></div>
+				<div class="col-md-4">
+					<button type="button" class="btn btn-success">Crear</button>
+				</div>
+			</div>
+
+		</div>
+		
+		<div class="col-md-1"></div>
+
+		<div id="matricular" class="col-md-4 bordergray paddingbottomtop">
+			<div class="row">
+				<div class="col-md-2"></div>
+				<div class="col-md-8"><p>Eliminar actividad</p></div>
+				<div class="col-md-2"></div>
+			</div>
+			<div id="matricular" class="row">
+				  <div class="col-md-1"></div>
+				  <div class="form-group col-md-10">
+				     <label for="selectmaterias">Seleccione actividad</label>
+				     <select class="form-control" id="selectmaterias">
+				        <option>Entrega intro (Funciones)</option>
+				        <option>Laboratorio 2 (Topic 2)</option>
+				        <option>Laboratorio 3 (Topic 3)</option>
+				     </select>
+				  </div>
+				  <div class="col-md-1"></div>
+			</div>
+			<div class="row">
+				<div class="col-md-8"></div>
+				<div class="col-md-4">
+					<button type="button" class="btn btn-danger" onClick="(function(){
+    confirm('Estas seguro?')
+    return false;
+})();return false;">
+						Eliminar
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-md-1"></div>
+	
+</div>	
+
+
+<div class="row"><h1 class="whitetext noselect">_</h1></div>
+<div class="row"><h1 class="whitetext noselect" >_</h1></div>
+<div class="row"><h1 class="whitetext noselect">_</h1></div>
+<div class="row"><h1 class="whitetext noselect">_</h1></div>
+<div class="row"><h1 class="whitetext noselect">_</h1></div>
+<div class="row"><h1 class="whitetext noselect">_</h1></div>

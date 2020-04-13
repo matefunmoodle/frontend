@@ -8,9 +8,14 @@
                 <span class="input-group-addon fa fa-search">
                 </span>
             </div>
-
         </div>
-                       
+        
+        <div style="text-align: right" class="col-lg-7">
+            <span *ngIf="compartiendo">Compartiendo archivo</span>
+            <span *ngIf="creandoArchivo">Creando archivo</span>
+
+            <img *ngIf="compartiendo || creandoArchivo" width=40 src="assets/img/btnloading.gif" />
+        </div>
     </div>
     <div class="row" style="margin-top: 20px">
         <div class="col-lg-5">
@@ -19,18 +24,19 @@
                     <ng-template ngbTabContent>
 
                         <div class="card">
-                            <div>
-                            <div class="btn-group pull-right" style="cursor: pointer; margin-top: -9px;">
-                                <button  ngbPopover="Atras"  triggers="mouseenter:mouseleave" data-placement="bottom" class="btn btn-sm btn-secondary pull-right" *ngIf="directorioActual.padreId!=-1" style="cursor: pointer; margin-top: -33.5px; margin-right: 73px; height: 30px;"(click)="navBack()">
-                                    <i class="fa fa-arrow-up"></i>
-                                </button>
-                            </div>
-                                <!-- <button class="btn btn-sm btn-secondary pull-right" style="cursor: pointer; margin-top: -35px;" > 
-                                    <i class="fa fa-plus"></i> 
-                                </buton> -->
+                            <div style="margin-right: 35px;">
+                                <div class="btn-group pull-right" style="cursor: pointer; margin-top: -9px;">
+                                    <button  ngbPopover="Atras"  triggers="mouseenter:mouseleave" data-placement="bottom" class="btn btn-sm btn-secondary pull-right" *ngIf="directorioActual.padreId!=-1" style="cursor: pointer; margin-top: -33.5px; margin-right: 73px; height: 30px;"(click)="navBack()">
+                                        <i class="fa fa-arrow-up"></i>
+                                    </button>
+                                </div>
+
                                 <div class="btn-group pull-right" style="cursor: pointer;    margin-top: -42px; height: 30px;    width: 29px;">
                                   <button ngbPopover="Nuevo"  triggers="mouseenter:mouseleave" data-placement="bottom" style="cursor: pointer;border-radius: 3px;" type="button" class="btn btn-sm btn-secondary" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <i class="fa fa-plus"></i> 
+                                  </button>
+                                  <button ngbPopover="{{soloMfTooltip}}"  triggers="mouseenter:mouseleave" data-placement="bottom" style="cursor: pointer;border-radius: 3px;" type="button" class="btn btn-sm btn-secondary" (click)="soloMatefunToggle($event)">
+                                    <i>{{soloMfTexto}}</i> 
                                   </button>
                                   <div class="dropdown-menu">
                                     <a class="dropdown-item"(click)="mkFile()" >Archivo</a>
@@ -60,9 +66,9 @@
                                         <div class="loading-bar"></div>
                                         <div class="loading-bar"></div>
                                     </div>
-                                    <div *ngFor="let arch of directorioActual.archivos | filter: 'nombre': filtroNombre " (click)="seleccionarArchivo(arch)" class="col-sm-3 col-4" style="text-align: center;">
-                                        <i *ngIf="arch.directorio" class="fa fa-folder" style="font-size: 3em; cursor: pointer;color:#f95e5e" aria-hidden="true"></i>
-                                        <i *ngIf="!arch.directorio" class="fa fa-file-text" style="font-size: 3em; cursor: pointer;color:#ff8383" aria-hidden="true"></i>
+                                    <div *ngFor="let arch of vistaDirectorioActualMisArchivos | filter: 'nombre': filtroNombre " (dblclick)="cargarArchivo(arch)" (click)="seleccionarArchivo(arch)" class="col-sm-3 col-4" style="text-align: center;">
+                                        <i *ngIf="arch.directorio" class="fa fa-folder" [ngClass]="{'fileselected':(archivoClickeado && archivoClickeado.id===arch.id)}" style="font-size: 3em; cursor: pointer;color:#f95e5e" aria-hidden="true"></i>
+                                        <i *ngIf="!arch.directorio" class="fa fa-file-text" [ngClass]="{'fileselected':(archivoClickeado && archivoClickeado.id===arch.id)}" style="font-size: 3em; cursor: pointer" aria-hidden="true"></i>
                                         <p style="cursor: pointer;">{{arch.nombre}}</p>
                                     </div>            
                                 </div>
@@ -71,10 +77,8 @@
 
                     </ng-template>
                 </ngb-tab>
-                <ngb-tab title="Compartidos">
+                <ngb-tab title="Curso">
                     <ng-template ngbTabContent>
-
-                        <div class="card" *ngIf="esAlumno">
                             <div class="card-block">
                                 <div class="row listado-archivos" style="min-height: 100px; overflow-y: scroll;">
                                     <div class="loading" *ngIf="loadingCompartidos">
@@ -83,16 +87,47 @@
                                         <div class="loading-bar"></div>
                                         <div class="loading-bar"></div>
                                     </div>
-                                    <div *ngFor="let arch of archivosCompartidosSinDuplicados | filter: 'nombre': filtroNombre " (click)="seleccionarArchivo(arch)" class="col-sm-3 col-4" style="text-align: center;">
-                                        <i class="fa fa-file-text" style="font-size: 3em; cursor: pointer;color:#ff8383" aria-hidden="true"></i>
-
+                                    <div *ngFor="let arch of archivosCurso | filter: 'nombre': filtroNombre " (click)="seleccionarArchivo(arch)" class="col-sm-3 col-4" style="text-align: center;">
+                                        <i *ngIf="arch.directorio" class="fa fa-folder" [ngClass]="{'fileselected':(archivoClickeado && archivoClickeado.id===arch.id)}" style="font-size: 3em; cursor: pointer;color:#f95e5e" aria-hidden="true"></i>
+                                        <i *ngIf="!arch.directorio" class="fa fa-file-text" [ngClass]="{'fileselected':(archivoClickeado && archivoClickeado.id===arch.id)}" style="font-size: 3em; cursor: pointer" aria-hidden="true"></i>
                                         <p style="cursor: pointer;">{{arch.nombre}}</p>
                                     </div>            
                                 </div>
                             </div>
-                        </div>
                     </ng-template>
                 </ngb-tab>
+                <ngb-tab title="Compartidos">
+                    <ng-template ngbTabContent>
+                            <div class="card-block">
+                                <div class="container row listado-archivos" style="min-height: 100px; overflow-y: scroll;">
+                                    <div class="loading" *ngIf="loadingCompartidos">
+                                        <div class="loading-bar"></div>
+                                        <div class="loading-bar"></div>
+                                        <div class="loading-bar"></div>
+                                        <div class="loading-bar"></div>
+                                    </div>
+                                    <div *ngFor="let arch of archivosCompartidosSinDuplicados | filter: 'nombre': filtroNombre " (click)="seleccionarArchivo(arch)" class="col-sm-3 col-4" style="text-align: center;">
+                                        <i class="fa fa-file-text" style="font-size: 3em; cursor: pointer;color:#ff8383" aria-hidden="true"></i>
+                                        <p style="cursor: pointer;">{{arch.nombre}}</p>
+                                    </div>
+
+                                </div>
+                            </div>
+                    </ng-template>
+                </ngb-tab>
+
+
+                <ngb-tab *ngIf="esDocente" title="Para corregir">
+                    <ng-template ngbTabContent>
+                            <div class="card-block">
+                         
+                                
+                            </div>
+                    </ng-template>
+                </ngb-tab>
+
+
+
             </ngb-tabset> 
         </div>
         <div class="col-lg-7">
@@ -112,16 +147,28 @@
 
                     <button class="btn btn-sm btn-secondary pull-left mr-2" *ngIf="esAlumno && archivoSeleccionado && hayArchivoMio()" (click)="seleccionarArchivoMio()">Ver mio</button>
 
-                    <button class="btn btn-sm btn-secondary pull-left mr-4" *ngIf="esAlumno && archivoSeleccionado && !archivoSeleccionado.directorio && archivoSeleccionado.archivoOrigenId != -1 && (archivoSeleccionado.estado == 'Edicion' || archivoSeleccionado.estado == 'Devuelto')" (click)="confirmarEntrega()">Entregar</button>
+                    <!-- archivoSeleccionado.archivoOrigenId != -1 && -->
+                    <button class="btn btn-sm btn-secondary pull-left mr-4" *ngIf="esAlumno && archivoSeleccionado && !archivoSeleccionado.directorio && (archivoSeleccionado.estado == 'Edicion' || archivoSeleccionado.estado == 'Devuelto')" (click)="confirmarEntrega()">Entregar</button>
+
+                    <button class="btn btn-sm btn-secondary pull-left mr-4" *ngIf="archivoSeleccionado?.puedeCompartir && ( coursesGroupsAndMembers && archivoSeleccionado && !archivoSeleccionado.directorio && (archivoSeleccionado.estado == 'Edicion' || archivoSeleccionado.estado == 'Devuelto') )" (click)="mostrarModalCompartirArchivo()">Enviar a alguien</button>
                     
+                    <button class="btn btn-sm btn-secondary pull-left mr-2" (click)="calificarEntrega()">
+                        Calificar
+                    </button>
+
                     <div class="pull-left mr-2" *ngIf="esAlumno && (archivoSeleccionado?.estado == 'Entregado')">{{archivoSeleccionado.estado}} - </div>
+                    
+                    <div class="pull-right" *ngIf="showLoadingFileIndicator">
+                        cargando <img width=20 src="assets/img/cargaliceo.gif" alt=" ...">
+                    </div>
+
 
                     <button *ngIf="esAlumno && archivoSeleccionado?.estado == 'Corregido'" class="btn btn-sm btn-secondary pull-left mr-2" (click)="verCalificacion()">Ver calificacion</button>
 
-                    <button *ngIf="!esAlumno" class="btn btn-sm btn-secondary pull-left mr-2" (click)="compartirArchivo()">Compartir</button>
+                    <!-- <button *ngIf="!esAlumno" class="btn btn-sm btn-secondary pull-left mr-2" (click)="compartirArchivo()">Compartir</button> -->
 
                     <div class="pull-left" *ngIf="archivoSeleccionado">
-                        Nombre: {{archivoSeleccionado?.nombre}} - Creado: {{archivoSeleccionado?.fechaCreacion | date}}
+                        Nombre: {{archivoSeleccionado?.nombre}} - Creado: {{ convertirFecha(archivoSeleccionado?.fechaCreacion) }} - Estado: {{archivoSeleccionado?.estado}} - Origen: {{archivoSeleccionado?.archivoOrigenId}}
                     </div>
                     <div class="pull-left" *ngIf="!archivoSeleccionado">Seleccione un archivo para previsualizarlo</div>
                     <div class="pull-right" *ngIf="archivoSeleccionado">

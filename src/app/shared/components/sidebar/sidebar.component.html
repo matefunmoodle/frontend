@@ -1,14 +1,33 @@
  <nav class="sidebar" #sidebarNav [ngClass]="{sidebarPushRight: isActive}" style="background: #036b9a !important;">
     <ul class="list-group">
-        <a [routerLink]="['/matefun']" (click)=toggleSidebar() [routerLinkActive]="['router-link-active']" class="list-group-item" style="color: white;">
+        <div style="padding-left: 10px; padding-top: 10px;">
+            <p style="color: white;"><b>Usuario:</b> {{usuario.nombre}} {{usuario.apellido}}</p>
+        </div>
+        <a *ngIf="esAlumno() || esDocente()" [routerLink]="['/matefun']" (click)=toggleSidebar() [routerLinkActive]="['router-link-active']" class="list-group-item" style="color: white;">
             <i class="fa fa-fw fa-desktop"></i>&nbsp;Programa
         </a>
-        <a [routerLink]="['/archivos']" (click)=toggleSidebar() [routerLinkActive]="['router-link-active']" class="list-group-item" style="color: white;">
+        <a *ngIf="esAlumno() || esDocente()" [routerLink]="['/archivos']" (click)=toggleSidebar() [routerLinkActive]="['router-link-active']" class="list-group-item" style="color: white;">
             <i class="fa fa-fw fa-file-o"></i>&nbsp;Archivos
         </a>
         <a *ngIf="esDocente()" [routerLink]="['/grupos']" (click)=toggleSidebar() [routerLinkActive]="['router-link-active']" class="list-group-item" style="color: white;">
             <i class="fa fa-fw fa-users"></i>&nbsp;Grupos
         </a>
+        
+        <a *ngIf="esAdminLiceo()" [routerLink]="['/cursos']" (click)=toggleSidebar() [routerLinkActive]="['router-link-active']" class="list-group-item" style="color: white;">
+            <i class="fa fa-graduation-cap"></i>&nbsp;Cursos
+        </a>
+
+        <a *ngIf="esDocente()" [routerLink]="['/actividades']" (click)=toggleSidebar() [routerLinkActive]="['router-link-active']" class="list-group-item" style="color: white;">
+            <i class="fa fa-fw fa-users"></i>&nbsp;Actividades
+        </a>
+
+        <a *ngIf="esAdmin()" [routerLink]="['/ieducativa']" (click)=toggleSidebar() [routerLinkActive]="['router-link-active']" class="list-group-item" style="color: white;">
+            <i class="fa fa-fw fa-users"></i>&nbsp;Gestion Liceos
+        </a>
+        
+
+
+
         
     </ul>
 </nav>
