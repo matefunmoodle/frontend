@@ -6,5 +6,5 @@
 
 //Configuracion dinamica pensando en servidor con ip dinamica
 //export const SERVER = window.location.protocol + '//' + window.location.host;//'http://localhost:9090';
-export const SERVER = 'https://18.216.147.162:8080';
+export const SERVER = process.env.SERVERURL;
 export const GHCI_URL = window.location.protocol == 'http:'?  'ws://'+window.location.host+'/endpoint': 'wss://'+window.location.host+'/endpoint';
